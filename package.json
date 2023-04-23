@@ -1,0 +1,32 @@
+{
+  "name": "@simon-tanna/simcity-loading-state",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-tanna/simcity-loading-state.git"
+  },
+  "keywords": [],
+  "author": "simon-tanna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simon-tanna/simcity-loading-state/issues"
+  },
+  "homepage": "https://github.com/simon-tanna/simcity-loading-state#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.1",
+    "@types/node": "^18.15.13",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "events": "^3.3.0",
+    "fs": "^0.0.1-security"
+  }
+}
