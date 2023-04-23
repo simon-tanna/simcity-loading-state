@@ -2,17 +2,37 @@
   "name": "@simon-tanna/simcity-loading-state",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/esm/types/index.d.ts",
+        "default": "./lib/esm/index.mjs"
+      },
+      "require": {
+        "types": "./lib/cjs/types/index.d.ts",
+        "default": "./lib/cjs/index.js"
+      }
+    }
+  },
+  "types": "./lib/cjs/types/index.d.ts",
+  "main": "./lib/cjs/index.js",
+  "files": [
+    "lib/**/*"
+  ],
   "scripts": {
-    "test": "jest",
-    "build": "tsc"
+    "clean": "rm -rf ./lib",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
+    "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
+    "prepack": "npm run build",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/simon-tanna/simcity-loading-state.git"
   },
   "keywords": [],
-  "author": "simon-tanna",
+  "author": "@simon-tanna",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/simon-tanna/simcity-loading-state/issues"
