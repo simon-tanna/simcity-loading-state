@@ -1,12 +1,37 @@
 import * as fs from "fs";
 import * as path from "path";
+import { EventEmitter } from "events";
 
+export const messageEmitter = new EventEmitter();
+
+/**
+ * Retrieves all messages from the 'loadingMessages.txt' file and returns them as an array of strings.
+ * @function
+ * @name getAllMessages
+ * @returns {string[]} An array containing all messages from the 'loadingMessages.txt' file.
+ * @example
+ * // Get all messages from 'loadingMessages.txt'
+ * const messages = getAllMessages();
+ * console.log(messages);
+ */
 export const getAllMessages = (): string[] => {
   const filePath: string = path.join(__dirname, "loadingMessages.txt");
   const messages: string[] = fs.readFileSync(filePath, "utf-8").split("\n");
   return messages;
 };
 
+/**
+ * Displays random loading messages from the 'loadingMessages.txt' file at a specified duration.
+ * If numberOfMessages is provided, it limits the number of messages displayed.
+ * @function
+ * @name getRandomMessage
+ * @param {number} [duration=3] - The duration in seconds between displaying messages. Default value is 3 seconds.
+ * @param {number} [numberOfMessages] - The optional limit for the number of messages to be displayed.
+ * @returns {function} A function that can be invoked to clear the interval and stop displaying messages.
+ * @throws {Error} If there are no messages available to display.
+ * @example
+ * // Display a random message every 5 seconds, up to 10 messages
+ */
 export const getRandomMessage = (
   duration: number = 3,
   numberOfMessages?: number
@@ -20,7 +45,7 @@ export const getRandomMessage = (
   let currentIndex: number = 0;
   let intervalId: NodeJS.Timeout | null = null;
 
-  const displayRandomLoadingMessage = () => {
+  const displayRandomLoadingMessage = (): string | undefined => {
     // Clear interval if number of messages is defined and equals the current index
     if (numberOfMessages !== undefined && currentIndex === numberOfMessages) {
       if (intervalId) clearInterval(intervalId);
@@ -42,7 +67,7 @@ export const getRandomMessage = (
     usedMessages.push(randomMessage);
     currentIndex++;
 
-    return randomMessage;
+    messageEmitter.emit("message", randomMessage);
   };
 
   intervalId = setInterval(displayRandomLoadingMessage, duration * 1000);
@@ -52,4 +77,4 @@ export const getRandomMessage = (
   };
 };
 
-export default { getAllMessages, getRandomMessage };
+export default { getAllMessages, getRandomMessage, messageEmitter };

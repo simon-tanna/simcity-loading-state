@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { getAllMessages, getRandomMessage } from "..";
+import { getAllMessages, getRandomMessage, messageEmitter } from "..";
 
 describe("getAllMessages", () => {
   it("returns an array of strings", () => {
@@ -17,73 +17,84 @@ describe("getAllMessages", () => {
 });
 
 describe("getRandomMessage", () => {
+  let intervalId: any;
   const originalSetInterval = global.setInterval;
-  const originalClearInterval = global.clearInterval;
+
+  beforeEach(() => {
+    messageEmitter.on("message", () => {});
+  });
 
   afterEach(() => {
+    if (intervalId) clearInterval(intervalId);
     global.setInterval = originalSetInterval;
-    global.clearInterval = originalClearInterval;
+    messageEmitter.removeAllListeners("message");
   });
 
-  it("returns a non-empty string", () => {
-    global.setInterval = ((callback: any, interval: any) => {
-      const message = callback();
+  it("returns a non-empty string", (done) => {
+    messageEmitter.once("message", (message) => {
       expect(typeof message === "string").toBe(true);
       expect(message.length).toBeGreaterThan(0);
-    }) as any;
-    getRandomMessage(1, 1);
+      done();
+    });
+    intervalId = getRandomMessage(1, 1);
   });
 
-  it("returns a different message when called multiple times", () => {
+  it("returns a different message when called multiple times", (done) => {
     const messages: string[] = [];
-    global.setInterval = ((callback: any, interval: any) => {
-      for (let i = 0; i < 3; i++) {
-        messages.push(callback());
+    let count = 0;
+
+    messageEmitter.on("message", (message) => {
+      messages.push(message);
+      count++;
+
+      if (count === 3) {
+        expect(messages[0] !== messages[1] || messages[1] !== messages[2]).toBe(
+          true
+        );
+        done();
       }
-    }) as any;
-    getRandomMessage(1, 3);
-    expect(messages[0] === messages[1] && messages[1] === messages[2]).toBe(
-      false
-    );
+    });
+
+    intervalId = getRandomMessage(1, 3);
   });
 
-  it("stops returning messages after the specified number of messages", () => {
-    const messages: string[] = [];
-    global.setInterval = ((callback: any, interval: any) => {
-      for (let i = 0; i < 4; i++) {
-        messages.push(callback());
+  it("stops returning messages after the specified number of messages", (done) => {
+    let count = 0;
+
+    messageEmitter.on("message", () => {
+      count++;
+
+      if (count === 2) {
+        setTimeout(() => {
+          expect(count).toBe(2);
+          done();
+        }, 1500);
       }
-    }) as any;
-    getRandomMessage(1, 2);
-    expect(messages[2]).toBeUndefined();
-    expect(messages[3]).toBeUndefined();
+    });
+
+    intervalId = getRandomMessage(1, 2);
   });
 
-  it("clears the interval when the returned cancel function is called", () => {
-    let clearIntervalCalled = false;
-    let capturedIntervalId: NodeJS.Timer;
+  it("clears the interval when the returned cancel function is called", (done) => {
+    let count = 0;
 
-    global.setInterval = ((callback: any, interval: any) => {
-      const intervalId = originalSetInterval(callback, interval);
-      capturedIntervalId = intervalId;
-      return intervalId;
-    }) as any;
-
-    global.clearInterval = ((intervalId: NodeJS.Timer) => {
-      originalClearInterval(intervalId);
-      if (intervalId === capturedIntervalId) {
-        clearIntervalCalled = true;
+    messageEmitter.on("message", () => {
+      count++;
+      if (count === 1) {
+        intervalId();
+        setTimeout(() => {
+          expect(count).toBe(1);
+          done();
+        }, 1500);
       }
-    }) as any;
+    });
 
-    const cancelInterval = getRandomMessage(1, undefined);
-    cancelInterval();
-    expect(clearIntervalCalled).toBe(true);
+    intervalId = getRandomMessage(1, undefined);
   });
 
   it("does not throw an error when the array is non-empty", () => {
     expect(() => {
-      getRandomMessage();
+      intervalId = getRandomMessage();
     }).not.toThrow();
   });
 });
