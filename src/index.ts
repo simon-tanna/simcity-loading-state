@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 
 const loadingMessagesFile = import("./loadingMessages.json").then(
-  (module) => module.messages
+  ({ default: module }) => module.messages
 );
 
 export const messageEmitter = new EventEmitter();

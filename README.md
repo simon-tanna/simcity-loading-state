@@ -6,11 +6,11 @@ This npm package provides an easy way to display random loading messages from a 
 
 Install the package using npm:
 
-`npm install simcity-loading-state`
+`npm install sim-loading-state`
 
 or using yarn:
 
-`yarn add simcity-loading-state`
+`yarn add sim-loading-state`
 
 ## Usage
 
@@ -65,11 +65,11 @@ export default RandomMessageComponent;
 
 ## API
 
-`getAllMessages(): string[]`
+#### getAllMessages(): string[]
 
 This function retrieves all messages from the `loadingMessages.txt` file and returns them as an array of strings.
 
-`getRandomMessage(duration: number, numberOfMessages?: number): () => void`
+#### getRandomMessage(duration: number, numberOfMessages?: number): () => void
 
 This function displays random loading messages from the `loadingMessages.txt` file at a specified duration (in seconds). If `numberOfMessages` is provided, it limits the number of messages displayed. It returns a function that can be invoked to clear the interval and stop displaying messages.
 
