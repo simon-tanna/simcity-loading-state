@@ -1,6 +1,8 @@
 import { EventEmitter } from "events";
 
-import { messages as loadingMessagesFile } from "./loadingMessages.json";
+const loadingMessagesFile = import("./loadingMessages.json").then(
+  (module) => module.messages
+);
 
 export const messageEmitter = new EventEmitter();
 
@@ -15,7 +17,8 @@ export const messageEmitter = new EventEmitter();
  * console.log(messages);
  */
 export const getAllMessages = async (): Promise<string[]> => {
-  return loadingMessagesFile;
+  const messages = await loadingMessagesFile;
+  return messages;
 };
 
 /**
