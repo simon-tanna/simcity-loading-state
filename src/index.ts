@@ -1,5 +1,5 @@
-import { promises as fs } from "fs";
-import { join as joinPath } from "path";
+import * as fs from "fs";
+import * as path from "path";
 import { EventEmitter } from "events";
 
 export const messageEmitter = new EventEmitter();
@@ -14,10 +14,10 @@ export const messageEmitter = new EventEmitter();
  * const messages = getAllMessages();
  * console.log(messages);
  */
-export const getAllMessages = async (): Promise<string[]> => {
-  const filePath = joinPath(__dirname, "loadingMessages.txt");
-  const fileContent = await fs.readFile(filePath, "utf-8");
-  return fileContent.split("\n");
+export const getAllMessages = (): string[] => {
+  const filePath: string = path.join(__dirname, "loadingMessages.txt");
+  const messages: string[] = fs.readFileSync(filePath, "utf-8").split("\n");
+  return messages;
 };
 
 /**
@@ -33,28 +33,33 @@ export const getAllMessages = async (): Promise<string[]> => {
  * // Display a random message every 5 seconds, up to 10 messages
  */
 export const getRandomMessage = (
-  duration = 3,
+  duration: number = 3,
   numberOfMessages?: number
-): (() => void) => {
-  const displayRandomLoadingMessage = async (): Promise<void> => {
-    const messages = await getAllMessages();
-    if (!messages.length) throw new Error("No messages available");
+) => {
+  const messages: string[] = getAllMessages();
+  if (messages.length === 0) {
+    throw new Error("No messages available");
+  }
 
-    let usedMessages: string[] = [];
-    let currentIndex = 0;
-    let intervalId: NodeJS.Timeout | null = null;
+  let usedMessages: string[] = [];
+  let currentIndex: number = 0;
+  let intervalId: NodeJS.Timeout | null = null;
 
+  const displayRandomLoadingMessage = (): string | undefined => {
+    // Clear interval if number of messages is defined and equals the current index
     if (numberOfMessages !== undefined && currentIndex === numberOfMessages) {
       if (intervalId) clearInterval(intervalId);
       return;
     }
 
+    // When all messages have been used, reset the index and usedMessages array
     if (usedMessages.length === messages.length) {
       usedMessages = [];
       currentIndex = 0;
     }
 
     let randomMessage: string;
+
     do {
       randomMessage = messages[Math.floor(Math.random() * messages.length)];
     } while (usedMessages.includes(randomMessage));
@@ -65,7 +70,7 @@ export const getRandomMessage = (
     messageEmitter.emit("message", randomMessage);
   };
 
-  const intervalId = setInterval(displayRandomLoadingMessage, duration * 1000);
+  intervalId = setInterval(displayRandomLoadingMessage, duration * 1000);
 
   return () => {
     if (intervalId) clearInterval(intervalId);
