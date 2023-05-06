@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import { EventEmitter } from "events";
 import { getAllMessages, getRandomMessage, messageEmitter } from "../src/index";
-import Mocha from "mocha";
 
 describe("getAllMessages()", () => {
-  it("should return an array of messages", async () => {
-    const messages: string[] = await getAllMessages();
+  it("should return an array of messages", () => {
+    const messages: string[] = getAllMessages();
     expect(messages).to.be.an("array");
     expect(messages.length).to.be.greaterThan(0);
     expect(messages.every((message) => typeof message === "string")).to.be.true;
