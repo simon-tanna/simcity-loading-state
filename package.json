@@ -1,5 +1,5 @@
 {
-  "name": "@simon-tanna/simcity-loading-state",
+  "name": "sim-loading-state",
   "version": "1.0.0",
   "description": "",
   "exports": {
@@ -25,7 +25,8 @@
     "build:esm": "tsc -p ./configs/tsconfig.esm.json && mv lib/esm/index.js lib/esm/index.mjs",
     "build:cjs": "tsc -p ./configs/tsconfig.cjs.json",
     "prepack": "npm run build",
-    "test": "mocha"
+    "test": "mocha",
+    "test:tsconfig": "cross-env TS_NODE_PROJECT=tsconfig.test.json npm test"
   },
   "repository": {
     "type": "git",
@@ -48,6 +49,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "events": "^3.3.0",
     "fs": "^0.0.1-security"
   }
