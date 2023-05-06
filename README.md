@@ -81,6 +81,8 @@ This instance of EventEmitter emits a "message" event with the random message as
 
 A big thank you to [Erik Cox](https://gist.github.com/erikcox) for collating the list of loading states that I was able to use.
 
+Massive high-fives to [Sean Long](https://github.com/slongdotexe) for the inspiration and encouragement to get this built.
+
 ### License
 
 MIT
